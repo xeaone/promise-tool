@@ -1,0 +1,37 @@
+{
+  "name": "promise-tool",
+  "version": "1.0.0",
+  "description": "A promised library of tools for Node.js and the browser.",
+  "main": "index.js",
+  "scripts": {
+    "test": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexanderElias/promise-tool.git"
+  },
+  "author": "Alexander Elias",
+  "license": "MPL-2.0",
+  "keywords": [
+	"promise",
+	"promises",
+	"tools",
+	"tool",
+	"series",
+	"sequence",
+	"time",
+	"timer",
+	"timers",
+	"then",
+	"catch",
+	"set",
+	"timeout",
+	"interval",
+	"setTimeout",
+	"setInterval"
+  ],
+  "bugs": {
+    "url": "https://github.com/AlexanderElias/promise-tool/issues"
+  },
+  "homepage": "https://github.com/AlexanderElias/promise-tool#readme"
+}
