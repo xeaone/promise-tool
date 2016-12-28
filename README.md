@@ -8,9 +8,8 @@ A promised library of tools for Node.js and the browser.
 - `PromiseTool.series` A given task will not be started until the preceding task completes.
 	- `tasks` <Array> The array of functions to execute in series.
 		- `task` <Function> A function which returns a promise.
-			- `resolve(value)` <Any> A value which will be appended to the beginning of each task/function parameters.
-	- `parameters` <Array> An Array of parameters.
-		- `parameter` <Any> This parameter is made available to each task/function.
+			- `resolve(result)` <Any> A result which will be appended to the end of each task/function as parameter.
+	- `parameters` <Array> An Array of parameters to be passed to each task/function. **Optional**
 
 - `PromiseTool.setTimeout`
 	- `delay` <Number> The number of milliseconds to wait before calling resolve.
@@ -50,25 +49,24 @@ A promised library of tools for Node.js and the browser.
 ```JavaScript
 var PromiseTool = require('../index.js');
 
-function a (text, one, two) {
+function a (one, two) {
 	return new Promise (function (resolve) {
 		setTimeout(function () {
-			text = `a-${one}${two}`;
-			return resolve(text);
+			return resolve(`a-${one}${two}`);
 		}, 900);
 	});
 }
 
-function b (text, one, two) {
+function b (one, two, result) {
 	return new Promise (function (resolve) {
 		setTimeout(function () {
-			text = `${text} b-${one}${two}`;
-			return resolve(text);
+			result = `${result} b-${one}${two}`;
+			return resolve(result);
 		}, 600);
 	});
 }
 
-PromiseTool.series([a, b], ['', 1, 2]).then(function (result) {
+PromiseTool.series([a, b], [1, 2]).then(function (result) {
 	console.log(result); // a-12 b-12
 });
 ```

@@ -1,32 +1,37 @@
 var PromiseTool = require('../index.js');
+var one = 1.0;
+var two = 2.0;
 
-function a (text, one, two) {
+function a (one, two) {
+// function a () {
 	return new Promise (function (resolve) {
 		setTimeout(function () {
-			text = `a-${one}${two}`;
-			return resolve(text);
+			return resolve(`a-${one}${two}`);
 		}, 900);
 	});
 }
 
-function b (text, one, two) {
+function b (one, two, result) {
+// function b (result) {
 	return new Promise (function (resolve) {
 		setTimeout(function () {
-			text = `${text} b-${one}${two}`;
-			return resolve(text);
+			result = `${result} b-${one}${two}`;
+			return resolve(result);
 		}, 600);
 	});
 }
 
-function c (text, one, two) {
+function c (one, two, result) {
+// function c (result) {
 	return new Promise (function (resolve) {
 		setTimeout(function () {
-			text = `${text} c-${one}${two}`;
-			return resolve(text);
+			result = `${result} c-${one}${two}`;
+			return resolve(result);
 		}, 300);
 	});
 }
 
-PromiseTool.series([a, b, c], ['', 1, 2]).then(function (result) {
+PromiseTool.series([a, b, c], [1, 2]).then(function (result) {
+// PromiseTool.series([a, b, c]).then(function (result) {
 	console.log(result);
 });

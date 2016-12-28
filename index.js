@@ -9,23 +9,15 @@ function isError (item) {
 	);
 }
 
-function overwrite (arg, arr) {
-	arg = Array.prototype.slice.call(arg);
+module.exports.series = function (promises, values) {
+	values = values || [];
 
-	for (var i = 0, l = arg.length; i < l; i++) {
-		arr.splice(i, 1, arg[i]);
-	}
-
-	return arr;
-}
-
-module.exports.series = function (promises, mainArguments) {
-	return promises.reduce(function (previous, current) {
-		return previous.then(function () {
-			var subArguments = overwrite(arguments, mainArguments);
-			return current.apply(null, subArguments);
+	return promises.reduce(function (previousPromise, currentPromise, index) {
+		return previousPromise.then(function () {
+			var args = index === 0 ? values : values.concat(Array.prototype.slice.call(arguments));
+			return currentPromise.apply(this, args);
 		});
-	}, Promise.resolve(mainArguments[0]));
+	}, Promise.resolve());
 };
 
 module.exports.setTimeout = function (delay) {
