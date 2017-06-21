@@ -2,9 +2,12 @@
 A promised library of tools for Node.js and the browser.
 
 ## Install
-`npm install promise-tool`
+`npm install promise-tool --save`
+
 
 ## API
+- `PromiseTool.lift()` Lifts a callback style function or prototype object and converts to a promise/s first argument must be an error.
+
 - `PromiseTool.series` A given task will not be started until the preceding task completes.
 	- `tasks` <Array> The array of functions to execute in series.
 		- `task` <Function> A function which returns a promise.

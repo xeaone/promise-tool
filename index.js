@@ -1,5 +1,7 @@
 
-function isError (item) {
+var PromiseTool = {};
+
+PromiseTool._isError = function (item) {
 	var name = item ? item.constructor.name : false;
 	return name && (
 		name === 'Error' || name === 'EvalError' ||
@@ -7,9 +9,56 @@ function isError (item) {
 		name === 'ReferenceError' || name === 'SyntaxError' ||
 		name === 'URIError' || name === 'TypeError'
 	);
-}
+};
 
-module.exports.series = function (promises, values) {
+PromiseTool._liftOne = function (method) {
+	return function () {
+		var args = Array.prototype.slice.call(arguments);
+
+		return new Promise(function (resolve, reject) {
+
+			args.push(function(error, data) {
+				if (error) {
+					return reject(error);
+				} else {
+					return resolve(data);
+				}
+			});
+
+			method.apply(null, args);
+
+		});
+	};
+};
+
+PromiseTool._liftAll = function (source) {
+	var self = this;
+	var target = source.constructor();
+
+	Object.keys(source).forEach(function (key) {
+		if (key.indexOf('Sync') !== key.length-4 && typeof source[key] === 'function') {
+			target[key] = self._liftOne(source[key]);
+		} else {
+			target[key] = source[key];
+		}
+	});
+
+	return target;
+};
+
+PromiseTool.lift = function (data) {
+	var self = this;
+
+	if (data === undefined || data === null) {
+		return undefined;
+	} else if (typeof data === 'function') {
+		return self._liftOne(data);
+	} else if (typeof data === 'object') {
+		return self._liftAll(data);
+	}
+};
+
+PromiseTool.series = function (promises, values) {
 	values = values || [];
 
 	return promises.reduce(function (previousPromise, currentPromise, index) {
@@ -20,7 +69,7 @@ module.exports.series = function (promises, values) {
 	}, Promise.resolve());
 };
 
-module.exports.setTimeout = function (delay) {
+PromiseTool.setTimeout = function (delay) {
 	var args = Array.prototype.slice.call(arguments);
 	return new Promise(function (resolve) {
 		setTimeout(function () {
@@ -30,12 +79,14 @@ module.exports.setTimeout = function (delay) {
 	});
 };
 
-module.exports.setInterval = function (delay, method) {
+PromiseTool.setInterval = function (delay, method) {
+	var self = this;
 	var args = Array.prototype.slice.call(arguments);
+
 	return new Promise(function (resolve, reject) {
 		setInterval(function () {
 			var result = method.apply(this, args);
-			if (result === false || isError(result)) {
+			if (result === false || self._isError(result)) {
 				clearInterval(this);
 				args.splice(0, 0, result);
 				reject.apply(this, args);
@@ -48,7 +99,7 @@ module.exports.setInterval = function (delay, method) {
 	});
 };
 
-module.exports.setImmediate = function () {
+PromiseTool.setImmediate = function () {
 	var args = Array.prototype.slice.call(arguments);
 	return new Promise(function (resolve) {
 		setImmediate(function () {
@@ -58,7 +109,7 @@ module.exports.setImmediate = function () {
 	});
 };
 
-module.exports.clearTimeout = function (timeout) {
+PromiseTool.clearTimeout = function (timeout) {
 	var args = Array.prototype.slice.call(arguments);
 	return new Promise(function (resolve) {
 		clearTimeout(timeout);
@@ -66,7 +117,7 @@ module.exports.clearTimeout = function (timeout) {
 	});
 };
 
-module.exports.clearInterval = function (interval) {
+PromiseTool.clearInterval = function (interval) {
 	var args = Array.prototype.slice.call(arguments);
 	return new Promise(function (resolve) {
 		clearInterval(interval);
@@ -74,10 +125,12 @@ module.exports.clearInterval = function (interval) {
 	});
 };
 
-module.exports.clearImmediate = function (immediate) {
+PromiseTool.clearImmediate = function (immediate) {
 	var args = Array.prototype.slice.call(arguments);
 	return new Promise(function (resolve) {
 		clearImmediate(immediate);
 		resolve.apply(null, args);
 	});
 };
+
+module.exports = PromiseTool;
