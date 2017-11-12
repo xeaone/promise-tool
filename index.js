@@ -1,3 +1,4 @@
+'use strict';
 
 var PromiseTool = {};
 
@@ -26,7 +27,6 @@ PromiseTool._liftOne = function (method) {
 			});
 
 			method.apply(null, args);
-
 		});
 	};
 };
@@ -47,20 +47,17 @@ PromiseTool._liftAll = function (source) {
 };
 
 PromiseTool.lift = function (data) {
-	var self = this;
-
 	if (data === undefined || data === null) {
 		return undefined;
 	} else if (typeof data === 'function') {
-		return self._liftOne(data);
+		return this._liftOne(data);
 	} else if (typeof data === 'object') {
-		return self._liftAll(data);
+		return this._liftAll(data);
 	}
 };
 
 PromiseTool.series = function (promises, values) {
 	values = values || [];
-
 	return promises.reduce(function (previousPromise, currentPromise, index) {
 		return previousPromise.then(function () {
 			var args = index === 0 ? values : values.concat(Array.prototype.slice.call(arguments));
@@ -70,8 +67,8 @@ PromiseTool.series = function (promises, values) {
 };
 
 PromiseTool.setTimeout = function (delay) {
-	var args = Array.prototype.slice.call(arguments);
 	return new Promise(function (resolve) {
+		var args = Array.prototype.slice.call(arguments);
 		setTimeout(function () {
 			clearTimeout(this);
 			resolve.apply(this, args);
@@ -81,9 +78,8 @@ PromiseTool.setTimeout = function (delay) {
 
 PromiseTool.setInterval = function (delay, method) {
 	var self = this;
-	var args = Array.prototype.slice.call(arguments);
-
 	return new Promise(function (resolve, reject) {
+		var args = Array.prototype.slice.call(arguments);
 		setInterval(function () {
 			var result = method.apply(this, args);
 			if (result === false || self._isError(result)) {
@@ -100,8 +96,8 @@ PromiseTool.setInterval = function (delay, method) {
 };
 
 PromiseTool.setImmediate = function () {
-	var args = Array.prototype.slice.call(arguments);
 	return new Promise(function (resolve) {
+		var args = Array.prototype.slice.call(arguments);
 		setImmediate(function () {
 			clearImmediate(this);
 			resolve.apply(this, args);
@@ -110,24 +106,24 @@ PromiseTool.setImmediate = function () {
 };
 
 PromiseTool.clearTimeout = function (timeout) {
-	var args = Array.prototype.slice.call(arguments);
 	return new Promise(function (resolve) {
+		var args = Array.prototype.slice.call(arguments);
 		clearTimeout(timeout);
 		resolve.apply(null, args);
 	});
 };
 
 PromiseTool.clearInterval = function (interval) {
-	var args = Array.prototype.slice.call(arguments);
 	return new Promise(function (resolve) {
+		var args = Array.prototype.slice.call(arguments);
 		clearInterval(interval);
 		resolve.apply(null, args);
 	});
 };
 
 PromiseTool.clearImmediate = function (immediate) {
-	var args = Array.prototype.slice.call(arguments);
 	return new Promise(function (resolve) {
+		var args = Array.prototype.slice.call(arguments);
 		clearImmediate(immediate);
 		resolve.apply(null, args);
 	});
